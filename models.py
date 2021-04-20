@@ -5,7 +5,7 @@ from sqlalchemy import (
     Date,
     ForeignKey,
     DateTime,
-    Decimal)
+    DECIMAL)
 
 from base import Base
 
@@ -58,6 +58,6 @@ class Observation(Base):
     observation_date = Column(Date, nullable=False)
     type_code = Column(Text, nullable=False)
     type_code_system = Column(Text, nullable=False)
-    value = Column(Decimal)
+    value = Column(DECIMAL)
     unit_code = Column(Text)
     unit_code_system = Column(Text)

@@ -10,7 +10,7 @@ pgsql:
 # Start database in docker in background
 .PHONY: start-pgsql
 start-pgsql:
-	docker start pr-fhir-pgsql || docker run -d -v $(shell pwd)/.docker:/docker-entrypoint-initdb.d -e POSTGRES_PASSWORD=5ecr3TPa55-p 5432:5432 --name pr-fhir-pgsql postgres:12-alpine
+	docker start pr-fhir-pgsql || docker run -d -v $(shell pwd)/.docker:/docker-entrypoint-initdb.d -e POSTGRES_PASSWORD=5ecr3TPa55 -p 5432:5432 --name pr-fhir-pgsql postgres:12-alpine
 
 .PHONY: clean-pgsql
 clean-pgsql:
