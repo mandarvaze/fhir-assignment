@@ -14,10 +14,9 @@ pre-commit install  # Only for development
 
 # Start postgres
 
-`make start-pgsql` (To start in the background)
-`make pgsql` (To start in the foreground - sometimes this is helpful to troubleshoot)
-
-Use `docker ps` to ensure that postgres has actually started
+- `make start-pgsql` (To start in the background)
+- `make pgsql` (To start in the foreground - sometimes this is helpful to troubleshoot)
+- Use `docker ps` to ensure that postgres has actually started
 
 # Assumptions
 
