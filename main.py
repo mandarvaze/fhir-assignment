@@ -1,6 +1,7 @@
 import ndjson
 from base import engine, Base, Session
 from models import Patient, Procedure, Encounter, Observation  # noqa
+from sqlalchemy import func, distinct
 from sqlalchemy.exc import NoResultFound
 
 
@@ -154,19 +155,29 @@ def import_data():
 #    observations = ndjson_to_list('./data/Observation.ndjson')
 
 
-def num_records(cls, session):
-    from sqlalchemy import func
-    rows = session.query(func.count(cls.id)).scalar()
-    return rows
+def num_records(qry):
+    return qry.scalar()
 
 
 def gen_report():
     tables = [Patient, Encounter, Observation, Procedure]
     with Session() as session:
         for table in tables:
-            count = num_records(table, session)
+            qry = session.query(func.count(table.id))
+            count = num_records(qry)
             table_name = table.__tablename__.title()
             print(f'Number of {table_name}s : {count}')
+        print("-------")
+        # Patients by Gender
+        genders = session.query(distinct(Patient.gender)).all()
+        for gender in genders:
+            # gender is a tuple w/ one entry, so we need to use gender[0]
+            qry = session.query(
+                func.count(
+                    Patient.gender)).filter(
+                        Patient.gender == gender[0])
+            count = num_records(qry)
+            print(f'Number of {gender[0]} Patients : {count}')
 
 
 def main():
