@@ -1,3 +1,4 @@
+import calendar
 import ndjson
 from base import engine, Base, Session
 from models import Patient, Procedure, Encounter, Observation  # noqa
@@ -178,6 +179,25 @@ def gen_report():
                         Patient.gender == gender[0])
             count = num_records(qry)
             print(f'Number of {gender[0]} Patients : {count}')
+        print("-------")
+        # Popular Procedures
+        print("The top 10 types of procedures (and their counts) :")
+        with engine.connect() as con:
+            rows = con.execute(
+                """select type_code, count(type_code) from procedure
+                   group by type_code order by count(type_code) desc
+                   limit 10;""")
+            for row in rows:
+                print(f'{row[0]}: {row[1]}')
+            print("-------")
+            print("The most popular day of the week when encounters occurred")
+            rows = con.execute(
+                """select extract(dow from start_date), count(id)
+                              from encounter group by 1 order by 2 desc;""")
+            result = [(row[0], row[1]) for row in rows]
+            print(f'{calendar.day_name[int(result[0][0])]}: {result[0][1]}')
+            print("The least popular day of the week when encounters occurred")
+            print(f'{calendar.day_name[int(result[6][0])]}: {result[6][1]}')
 
 
 def main():
