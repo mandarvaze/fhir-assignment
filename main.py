@@ -1,3 +1,4 @@
+import argparse
 import calendar
 import ndjson
 from base import engine, Base, Session
@@ -152,8 +153,10 @@ def import_data():
     import_patients(patients)
     encounters = ndjson_to_list('./data/Encounter.ndjson')
     import_encounters(encounters)
-#    procedures = ndjson_to_list('./data/Procedure.ndjson')
-#    observations = ndjson_to_list('./data/Observation.ndjson')
+    procedures = ndjson_to_list('./data/Procedure.ndjson')
+    import_procedures(procedures)
+    observations = ndjson_to_list('./data/Observation.ndjson')
+    import_observations(observations)
 
 
 def num_records(qry):
@@ -201,14 +204,32 @@ def gen_report():
 
 
 def main():
-    # We do not want same data imported again if this program
-    # is run multiple times so drop all the data first
-    # There may be other option like make `source_id` unique,
-    # but that is not mentioned in the requirements, hence this approach
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    import_data()
-    gen_report()
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "-i",
+        "--import_data",
+        dest='import_data',
+        action='store_true',
+        help="Import data")
+    group.add_argument(
+        "-r",
+        "--gen_report",
+        dest='gen_report',
+        action='store_true',
+        help="Generate report")
+    args = parser.parse_args()
+    if args.import_data:
+        print("Importing data can take some time..\n\n")
+        # We do not want same data imported again if this program
+        # is run multiple times so drop all the data first
+        # There may be other option like make `source_id` unique,
+        # but that is not mentioned in the requirements, hence this approach
+        Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
+        import_data()
+    if args.gen_report:
+        gen_report()
 
 
 if __name__ == '__main__':
